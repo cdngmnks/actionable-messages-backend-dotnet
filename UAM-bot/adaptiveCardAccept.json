@@ -1,0 +1,45 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "originator": "f3d86ba6-bf2c-4576-b8f6-684165dbe26b",
+  "body": [
+    {
+      "id": "1",
+      "type": "TextBlock",
+      "size": "Medium",
+      "weight": "Bolder",
+      "text": "Terms and conditions"
+    },
+    {
+      "id": "2",
+      "type": "TextBlock",
+      "text": "Accept",
+      "wrap": true
+    },
+    {
+      "type": "ActionSet",
+      "id": "actionId123",
+      "isVisible": false,
+      "actions": [
+        {
+          "id": "3",
+          "isEnabled": true,
+          "type": "Action.Execute",
+          "title": "Accept",
+          "verb": "termsAccept",
+          "data": {},
+          "style": "positive"
+        },
+        {
+          "id": "4",
+          "isEnabled": true,
+          "type": "Action.Execute",
+          "title": "Decline",
+          "verb": "termsDecline",
+          "data": {}
+        }
+      ]
+    }
+  ],
+  "type": "AdaptiveCard",
+  "version": "1.4"
+}
