@@ -3,26 +3,17 @@
 
 using AdaptiveCards;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
-using Newtonsoft.Json;
-using Microsoft.Bot.Builder.Teams;
-using Microsoft.Bot.Schema.Teams;
-using Newtonsoft.Json.Linq;
-using System.Linq;
 using UAM_bot.Helpers;
 using UAM_bot.Models;
-using Microsoft.Extensions.Caching.Memory;
 
-namespace UAM_bot
+namespace Bots
 {
     public class TermsBot : ActivityHandler
     {
@@ -31,7 +22,7 @@ namespace UAM_bot
         IMemoryCache _memoryCache;
         string cacheKey = "currentState";
         MemoryCacheEntryOptions cacheOptions;
-        public TermsBot(IMemoryCache memoryCache) 
+        public TermsBot(IMemoryCache memoryCache)
         {
             _memoryCache = memoryCache;
             cacheOptions = new MemoryCacheEntryOptions();
@@ -47,7 +38,7 @@ namespace UAM_bot
                 string cardJson;
                 JObject response;
 
-                var data = JsonConvert.DeserializeObject<InitialSequentialCard>(turnContext.Activity.Value.ToString());
+                var data = JsonConvert.DeserializeObject<InitialCard>(turnContext.Activity.Value.ToString());
                 string verb = data.action.verb;
 
                 switch (verb)
@@ -55,7 +46,7 @@ namespace UAM_bot
                     case "termsAccept":
                         _memoryCache.Set(cacheKey, true, cacheOptions);
 
-                        string[] approvedCard = { "adaptiveCardAccept.json" };
+                        string[] approvedCard = { "Cards", "TermsAndConditionsCardAccept.json" };
                         cardJson = CardHelper.GetJson(approvedCard);
                         response = JObject.Parse(cardJson);
 
@@ -71,7 +62,7 @@ namespace UAM_bot
                     case "termsDecline":
                         _memoryCache.Set(cacheKey, false, cacheOptions);
 
-                        string[] rejectedCard = { "adaptiveCardDecline.json" };
+                        string[] rejectedCard = { "Cards", "TermsAndConditionsCardDecline.json" };
                         cardJson = CardHelper.GetJson(rejectedCard);
                         response = JObject.Parse(cardJson);
 
@@ -87,17 +78,17 @@ namespace UAM_bot
                     case "initialRefresh":
 
                         _memoryCache.TryGetValue(cacheKey, out currentState);
-                        if (currentState != null) 
+                        if (currentState != null)
                         {
                             string[] card;
 
                             if (currentState == true)
                             {
-                                card = new string[] { "adaptiveCardAccept.json" };
-                            } 
+                                card = new string[] { "Cards", "TermsAndConditionsCardAccept.json" };
+                            }
                             else
                             {
-                                card = new string[] { "adaptiveCardDecline.json" };
+                                card = new string[] { "Cards", "TermsAndConditionsCardDecline.json" };
                             }
 
                             cardJson = CardHelper.GetJson(card);
@@ -111,7 +102,7 @@ namespace UAM_bot
                             };
 
                             return adaptiveCardResponse;
-                        }  
+                        }
                         else
                         {
                             return null;
