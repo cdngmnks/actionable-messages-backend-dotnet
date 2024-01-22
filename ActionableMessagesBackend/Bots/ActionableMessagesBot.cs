@@ -10,19 +10,19 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using UAM_bot.Helpers;
-using UAM_bot.Models;
+using ActionableMessagesBackend.Helpers;
+using ActionableMessagesBackend.Models;
 
-namespace Bots
+namespace ActionableMessagesBackend.Bots
 {
-    public class TermsBot : ActivityHandler
+    public class ActionableMessagesBot : ActivityHandler
     {
 
         bool? currentState = null;
         IMemoryCache _memoryCache;
         string cacheKey = "currentState";
         MemoryCacheEntryOptions cacheOptions;
-        public TermsBot(IMemoryCache memoryCache)
+        public ActionableMessagesBot(IMemoryCache memoryCache)
         {
             _memoryCache = memoryCache;
             cacheOptions = new MemoryCacheEntryOptions();
@@ -46,8 +46,7 @@ namespace Bots
                     case "termsAccept":
                         _memoryCache.Set(cacheKey, true, cacheOptions);
 
-                        string[] approvedCard = { "Cards", "TermsAndConditionsCardAccept.json" };
-                        cardJson = CardHelper.GetJson(approvedCard);
+                        cardJson = CardHelper.ExpandCard(CardHelper.TermsAndConditionsCardAccept);
                         response = JObject.Parse(cardJson);
 
                         adaptiveCardResponse = new AdaptiveCardInvokeResponse()
@@ -62,8 +61,7 @@ namespace Bots
                     case "termsDecline":
                         _memoryCache.Set(cacheKey, false, cacheOptions);
 
-                        string[] rejectedCard = { "Cards", "TermsAndConditionsCardDecline.json" };
-                        cardJson = CardHelper.GetJson(rejectedCard);
+                        cardJson = CardHelper.ExpandCard(CardHelper.TermsAndConditionsCardDecline);
                         response = JObject.Parse(cardJson);
 
                         adaptiveCardResponse = new AdaptiveCardInvokeResponse()
@@ -80,18 +78,18 @@ namespace Bots
                         _memoryCache.TryGetValue(cacheKey, out currentState);
                         if (currentState != null)
                         {
-                            string[] card;
+                            string card;
 
                             if (currentState == true)
                             {
-                                card = new string[] { "Cards", "TermsAndConditionsCardAccept.json" };
+                                card = CardHelper.TermsAndConditionsCardAccept;
                             }
                             else
                             {
-                                card = new string[] { "Cards", "TermsAndConditionsCardDecline.json" };
+                                card = CardHelper.TermsAndConditionsCardDecline;
                             }
 
-                            cardJson = CardHelper.GetJson(card);
+                            cardJson = CardHelper.ExpandCard(card);
                             response = JObject.Parse(cardJson);
 
                             adaptiveCardResponse = new AdaptiveCardInvokeResponse()

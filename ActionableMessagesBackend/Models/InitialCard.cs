@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UAM_bot.Models
+namespace ActionableMessagesBackend.Models
 {
     
     /// <summary>
