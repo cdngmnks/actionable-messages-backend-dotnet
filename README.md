@@ -11,12 +11,14 @@ To do this we need 3 things:
 
 ## Actionable Messages Designer 
 For this to work properly adaptive card version 1.4 or bigger should be used. In this proof of concept 1.4 is used. The cards used for this poc are in this repository.
-Also in every adaptive card that you send trough the designer,an originator must be set.
+Also in every adaptive card that you send trough the designer,an originator must be set. 
+The originatior is placed in the Bot-linked registration. Go to channels, click on outlook them check your approval status. Click on the registration you crated, inside is the originator id.
 Don't forget to set a [provider](https://outlook.office.com/connectors/oam/publish) in outlook. For testing purposes use Test Users scope.
 
 ## Setup an azure bot
 On azure select a Azure Bot service and setup the configuration. 
 First setup the Messaging endpoint. This should be the enpoint where the api runs. If you want to debug you api, ngrok url can be used.
+To use ngrok to test your bot template function app use "ngrok http <<port>> --host-header rewrite" command to bind your localhost with a free ngrok domain. 
 We can use multiple types of azure bot. This is tested on two types UserAssigned and MultiTenant. For testing on localhost with ngrok MultiTenant bot is needed because of the authentication.
 Also the outlook channel should be opened and here we can register the provider with the bot id and not with url.
 
@@ -44,6 +46,65 @@ If the function is published on app service on azure and the UserAssigned bot is
 - Click on an action and see if it works properly.
 - Important!! In this code cache memory is used to save the choosen choice state. This is not a good practice and is used only to test the adaptive cards handling. In realty these states are saved in a database.
 
+# Adaptive Card Example
+```json
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "originator": "<<originatorId>>",
+  "body": [
+    {
+        "id": "1",
+        "type": "TextBlock",
+        "size": "Medium",
+        "weight": "Bolder",
+        "text": "Terms and conditions"
+    },
+    {
+        "id": "2",
+        "type": "TextBlock",
+        "text": "Do you accept our terms and conditions?",
+        "wrap": true
+    },
+    {
+        "type": "ActionSet",
+        "id": "actionId123",
+        "actions": [
+            {
+                "id": "3",
+                "isEnabled": true,
+                "type": "Action.Execute",
+                "title": "Accept",
+                "verb": "termsAccept",
+                "data": {},
+                "style": "positive"
+            },
+            {
+                "id": "4",
+                "isEnabled": true,
+                "type": "Action.Execute",
+                "title": "Decline",
+                "verb": "termsDecline",
+                "data": {}
+            }
+        ],
+        "autoInvokeAction": {
+            "type": "Action.Execute",
+            "verb": "test",
+            "data": {}
+        }
+    }
+  ],
+  "refresh": {
+    "action": {
+        "type": "Action.Execute",
+        "verb": "initialRefresh",
+        "data": {}
+    }
+  },
+  "type": "AdaptiveCard",
+  "version": "1.4"
+}
+```
 ## References
 - [Adaptive Card Templating](https://learn.microsoft.com/en-us/adaptive-cards/templating/)
 - [Overview of Universal Action Model](https://learn.microsoft.com/en-us/outlook/actionable-messages/universal-action-model)
