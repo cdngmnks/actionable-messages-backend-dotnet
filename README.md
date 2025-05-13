@@ -105,6 +105,33 @@ If the function is published on app service on azure and the UserAssigned bot is
   "version": "1.4"
 }
 ```
+
+When integrating Outlook Actionable Messages with a Bot Framework bot hosted in an Azure Function, two layers of security come into play:
+
+## 1. Bot Framework Authentication
+Bot Framework handles authentication automatically when the incoming request is:
+-From a Microsoft Teams client or other Bot Channel
+-Signed using Bot Framework credentials
+-Sent through the bot connector service
+
+This is configured using the MicrosoftAppId and MicrosoftAppPassword in your environment. The adapter internally validates JWT tokens from trusted issuers like https://api.botframework.com.
+
+## 2. Outlook Actionable Message Token Validation (Manual)
+Outlook Actionable Messages are submitted from Outlook clients directly, not through the Bot Framework connector. Microsoft signs these requests using a separate security mechanism that your bot must manually validate:
+
+These JWTs are signed by https://api.botframework.com, but intended for Outlook clients.
+
+Tokens are not validated by the bot adapter automatically.
+The issuer is valid, but you must verify the token signature and audience yourself.
+Public signing keys for these tokens are retrieved from Bot Framework OpenID metadata.
+
+This validation ensures that:
+-The request truly came from Microsoft Outlook (not spoofed).
+-The payload hasn’t been tampered with.
+-The audience matches your bot's App ID.
+
+Without this, anyone with your endpoint could forge a POST request with an adaptive card payload.
+
 ## References
 - [Adaptive Card Templating](https://learn.microsoft.com/en-us/adaptive-cards/templating/)
 - [Overview of Universal Action Model](https://learn.microsoft.com/en-us/outlook/actionable-messages/universal-action-model)
