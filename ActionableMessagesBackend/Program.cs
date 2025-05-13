@@ -11,6 +11,7 @@ var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
     .ConfigureServices(services =>
     {
+        Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
         services.AddHttpClient();
 
         services.AddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();
